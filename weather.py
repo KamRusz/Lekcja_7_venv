@@ -1,36 +1,19 @@
-import datetime, time
-import requests
-import json
-
-wybor_daty = {}
-data = datetime.datetime.utcfromtimestamp(int("1644141600")).strftime('%Y-%m-%d')
-#print(data)
-dzis=datetime.date.today()
-#print(dzis)
-
-
-historia = {}
-
-
-#with open("pogoda.txt", "w") as pogoda_log:
-#    json.dump(historia, pogoda_log, sort_keys=True, indent=4, ensure_ascii=False)
-
-
-with open("pogoda.txt", 'r') as pogoda_log:
-    historia = json.load(pogoda_log)
-
-print(historia["2022-02-08"])
-
-
-
-
-
-
-
+import datetime, time, requests, json, sys
+from os import path
 
 opad = ("Rain", "Snow", "Będzie padać", "Nie będzie padać")
 
+if path.exists("pogoda.txt"):
+    if path.isfile("pogoda.txt"):
+        with open("pogoda.txt", 'r') as pogoda_log:
+            historia = json.load(pogoda_log)
+else:
+    historia = {}
 
+# jesli data poza zakresm to komunikat
+
+pobrana_data="2022-02-07" # argv 
+api_key = "6daa76d5a9mshe1e6b28d3640045p107ec2jsn801692e10c89" #+ APi key argv
 
 def unix_na_ludzki(data_unix):
     data_ludzka = datetime.datetime.utcfromtimestamp(int(data_unix)).strftime('%Y-%m-%d')
@@ -49,7 +32,7 @@ def czytaj_16dni():
 
     headers = {
         'x-rapidapi-host': "community-open-weather-map.p.rapidapi.com",
-        'x-rapidapi-key': "6daa76d5a9mshe1e6b28d3640045p107ec2jsn801692e10c89"
+        'x-rapidapi-key': api_key
         }
 
     response = requests.request("GET", url, headers=headers, params=querystring)
@@ -69,7 +52,7 @@ def czytaj_historia(historyczna_data):
 
     headers = {
         'x-rapidapi-host': "community-open-weather-map.p.rapidapi.com",
-        'x-rapidapi-key': "6daa76d5a9mshe1e6b28d3640045p107ec2jsn801692e10c89"
+        'x-rapidapi-key': api_key
         }
 
     response = requests.request("GET", url, headers=headers, params=querystring)
@@ -77,13 +60,14 @@ def czytaj_historia(historyczna_data):
     historia[historyczna_data] = opad[2] if dane["current"]["weather"][0]["main"] in opad else opad[3]
     return historia
 
-
-
-pobrana_data="2022-02-07"
-
-if str(dzis)<=pobrana_data:
-    historia = czytaj_16dni()
+if pobrana_data in historia:
+    print(f"{pobrana_data} : {historia.get(pobrana_data)}")
 else:
-    historia = czytaj_historia(pobrana_data)
+    if str(datetime.date.today())<=pobrana_data:
+        historia = czytaj_16dni()
+    else:
+        historia = czytaj_historia(pobrana_data)
+    print(f"{pobrana_data} : {historia.get(pobrana_data)}")
 
-print(historia)
+with open("pogoda.txt", "w") as pogoda_log:
+    json.dump(historia, pogoda_log, sort_keys=True, indent=4, ensure_ascii=False)
