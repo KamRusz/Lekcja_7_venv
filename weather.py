@@ -1,7 +1,7 @@
 import datetime, time, requests, json, sys
 from os import path
 
-opad = ("Rain", "Snow", "Będzie padać", "Nie będzie padać")
+opad = ("Rain", "Snow", "Będzie padać", "Nie będzie padać", "Padało", "Nie padało")
 
 if path.exists("pogoda.txt"):
     if path.isfile("pogoda.txt"):
@@ -80,7 +80,7 @@ def czytaj_historia(historyczna_data):
 
     response = requests.request("GET", url, headers=headers, params=querystring)
     dane = response.json()["current"]["weather"][0]["main"]
-    historia[historyczna_data] = opad[2] if dane in opad else opad[3]
+    historia[historyczna_data] = opad[4] if dane in opad else opad[5]
     return historia
 
 if pobrana_data in historia:
