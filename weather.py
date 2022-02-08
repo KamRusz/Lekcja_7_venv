@@ -10,10 +10,32 @@ if path.exists("pogoda.txt"):
 else:
     historia = {}
 
-# jesli data poza zakresm to komunikat
 
-pobrana_data="2022-02-07" # argv 
-api_key = "6daa76d5a9mshe1e6b28d3640045p107ec2jsn801692e10c89" #+ APi key argv
+try:
+    api_key = sys.argv[1]
+except IndexError:
+    exit("nie podano argumentów")
+else:
+    api_key = sys.argv[1]
+
+try:
+    pobrana_data = sys.argv[2]
+except IndexError:
+    pobrana_data = str(datetime.date.today())
+else:
+    pobrana_data = sys.argv[2]
+    wczytana_data = datetime.datetime.strptime(pobrana_data, '%Y-%m-%d')
+ 
+if wczytana_data < (datetime.datetime.today() - datetime.timedelta(6)):
+    exit("Program obsługuje wyłącznie daty od"
+    f" {datetime.date.today() - datetime.timedelta(5)}"
+    f" do {datetime.date.today() + datetime.timedelta(15)}"
+    )
+if wczytana_data > (datetime.datetime.today() + datetime.timedelta(15)):
+    exit("Program obsługuje wyłącznie daty od"
+    f" {datetime.date.today() - datetime.timedelta(5)}"
+    f" do {datetime.date.today() + datetime.timedelta(15)}"
+    )
 
 def unix_na_ludzki(data_unix):
     data_ludzka = datetime.datetime.utcfromtimestamp(int(data_unix)).strftime('%Y-%m-%d')
@@ -61,13 +83,13 @@ def czytaj_historia(historyczna_data):
     return historia
 
 if pobrana_data in historia:
-    print(f"{pobrana_data} : {historia.get(pobrana_data)}")
+    print(f"\n{pobrana_data} : {historia.get(pobrana_data)}")
 else:
     if str(datetime.date.today())<=pobrana_data:
         historia = czytaj_16dni()
     else:
         historia = czytaj_historia(pobrana_data)
-    print(f"{pobrana_data} : {historia.get(pobrana_data)}")
+    print(f"\n{pobrana_data} : {historia.get(pobrana_data)}")
 
 with open("pogoda.txt", "w") as pogoda_log:
     json.dump(historia, pogoda_log, sort_keys=True, indent=4, ensure_ascii=False)
