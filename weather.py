@@ -13,7 +13,7 @@ else:
 try:
     api_key = sys.argv[1]
 except IndexError:
-    exit("nie podano argumentów")
+    exit("nie podano klucza api")
 else:
     api_key = sys.argv[1]
 
