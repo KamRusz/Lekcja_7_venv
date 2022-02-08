@@ -10,7 +10,6 @@ if path.exists("pogoda.txt"):
 else:
     historia = {}
 
-
 try:
     api_key = sys.argv[1]
 except IndexError:
@@ -24,15 +23,18 @@ except IndexError:
     pobrana_data = str(datetime.date.today())
 else:
     pobrana_data = sys.argv[2]
-    wczytana_data = datetime.datetime.strptime(pobrana_data, '%Y-%m-%d')
+wczytana_data = datetime.datetime.strptime(pobrana_data, '%Y-%m-%d')
  
 if wczytana_data < (datetime.datetime.today() - datetime.timedelta(6)):
-    exit("Program obsługuje wyłącznie daty od"
+    exit(f"\n{pobrana_data} : Nie wiem"
+    "\n\nProgram obsługuje wyłącznie daty od"
     f" {datetime.date.today() - datetime.timedelta(5)}"
     f" do {datetime.date.today() + datetime.timedelta(15)}"
     )
+
 if wczytana_data > (datetime.datetime.today() + datetime.timedelta(15)):
-    exit("Program obsługuje wyłącznie daty od"
+    exit(f"\n{pobrana_data} : Nie wiem"
+    "\n\nProgram obsługuje wyłącznie daty od"
     f" {datetime.date.today() - datetime.timedelta(5)}"
     f" do {datetime.date.today() + datetime.timedelta(15)}"
     )
@@ -43,8 +45,7 @@ def unix_na_ludzki(data_unix):
 
 def ludzki_na_unix(data_ludzka):
     data_unix = int(datetime.datetime.strptime(
-        f"{data_ludzka} 11:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
-        )
+        f"{data_ludzka} 11:00:00", "%Y-%m-%d %H:%M:%S").timestamp())
     return data_unix
    
 def czytaj_16dni():
@@ -78,8 +79,8 @@ def czytaj_historia(historyczna_data):
         }
 
     response = requests.request("GET", url, headers=headers, params=querystring)
-    dane = response.json()
-    historia[historyczna_data] = opad[2] if dane["current"]["weather"][0]["main"] in opad else opad[3]
+    dane = response.json()["current"]["weather"][0]["main"]
+    historia[historyczna_data] = opad[2] if dane in opad else opad[3]
     return historia
 
 if pobrana_data in historia:
