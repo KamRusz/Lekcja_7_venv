@@ -20,7 +20,7 @@ else:
 try:
     pobrana_data = sys.argv[2]
 except IndexError:
-    pobrana_data = str(datetime.date.today())
+    pobrana_data = str(datetime.date.today() + datetime.timedelta(days=1))
 else:
     pobrana_data = sys.argv[2]
 wczytana_data = datetime.datetime.strptime(pobrana_data, '%Y-%m-%d')
